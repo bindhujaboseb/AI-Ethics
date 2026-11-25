@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Ethics Detective – Grade VIII AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+<!--
+  AI Ethics Detective – Ethics and Responsible AI (Grade VIII)
+  Teacher-made resource © 2026 Bindhuja Bose B, Sharjah Indian School, Juwaiza.
+  All rights reserved. Answers and points are checked by the school's Google Apps Script server.
+-->
+<style>
+:root{
+  --purple:#5b2bd6; --purple2:#7c4dff; --ink:#2a1a4a; --card:#fff;
+  --pink:#ff4f8b; --orange:#ff9f1c; --yellow:#ffd23f; --green:#2ec27e; --teal:#14b8c4; --blue:#3a86ff; --red:#ef476f;
+  --privacy:#3a86ff; --misinfo:#ff4f8b; --social:#ff9f1c;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:"Fredoka",system-ui,sans-serif;color:var(--ink);
+  background:var(--purple);
+  background-image:radial-gradient(circle at 20% 20%,rgba(255,255,255,.08) 0 60px,transparent 61px),
+    radial-gradient(circle at 80% 70%,rgba(255,255,255,.07) 0 90px,transparent 91px),
+    linear-gradient(160deg,#6a35f0 0%,#4b1fb8 100%);
+  background-attachment:fixed;
+}
+h1,h2,h3,.brand{font-family:"Lilita One","Fredoka",sans-serif;font-weight:400;letter-spacing:.5px}
+button{font-family:inherit;cursor:pointer}
+.hidden{display:none!important}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;padding:10px 18px;background:rgba(0,0,0,.18);color:#fff;position:sticky;top:0;z-index:5}
+.brand{font-size:24px}
+.brand span{color:var(--yellow)}
+.top .sp{flex:1}
+.pill{background:#fff;color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:600;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.pill.pts{background:var(--yellow);font-size:18px}
+.btn{border:0;border-radius:14px;padding:12px 22px;font-size:18px;font-weight:600;color:#fff;background:var(--green);box-shadow:0 5px 0 rgba(0,0,0,.25);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:15px;border-radius:10px}
+.btn.ghost{background:rgba(255,255,255,.2)}
+.btn.out{background:var(--red)}
+.btn.blue{background:var(--blue)} .btn.orange{background:var(--orange)} .btn.pink{background:var(--pink)}
+
+main{max-width:980px;margin:0 auto;padding:22px 16px 90px}
+.card{background:var(--card);border-radius:22px;padding:22px;box-shadow:0 8px 0 rgba(0,0,0,.18);margin-bottom:18px}
+.title{color:#fff;text-align:center;margin:4px 0 18px}
+.title h2{font-size:34px;margin:0;text-shadow:0 4px 0 rgba(0,0,0,.2)}
+.title p{margin:4px 0 0;font-size:18px;opacity:.95}
+
+/* login */
+.login{max-width:440px;margin:40px auto}
+.login h1{text-align:center;font-size:40px;margin:0 0 4px;color:var(--purple)}
+.login .sub{text-align:center;margin:0 0 18px;color:#6b5a8e}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:600;margin-bottom:6px}
+.field input,.field select{width:100%;padding:12px 14px;font-size:18px;border:3px solid #e1d8f7;border-radius:14px;font-family:inherit;outline:none}
+.field input:focus,.field select:focus{border-color:var(--purple2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{color:var(--red);font-weight:600;min-height:22px;text-align:center}
+
+/* journey map */
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.stop{border-radius:20px;padding:18px;color:#fff;box-shadow:0 7px 0 rgba(0,0,0,.22);position:relative;min-height:150px;display:flex;flex-direction:column;border:0;text-align:left;font-size:16px}
+.stop .ic{font-size:38px;line-height:1}
+.stop h3{margin:8px 0 2px;font-size:22px}
+.stop p{margin:0;opacity:.95;font-size:15px}
+.stop .st{margin-top:auto;padding-top:10px;font-weight:600;font-size:15px}
+.stop.locked{filter:grayscale(.85);opacity:.6;cursor:not-allowed}
+.stop.done::after{content:"✔";position:absolute;top:10px;right:14px;background:#fff;color:var(--green);border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-size:20px;font-weight:700}
+.c-starter{background:var(--teal)} .c-l1{background:var(--blue)} .c-l2{background:var(--pink)} .c-l3{background:var(--orange)}
+.c-l4{background:#9b5de5} .c-pl{background:var(--green)} .c-b{background:#f15bb5}
+.tag{display:inline-block;background:rgba(255,255,255,.3);border-radius:999px;padding:2px 10px;font-size:13px;margin-top:6px}
+
+/* tasks */
+.task-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.task-head h2{margin:0;font-size:28px;color:var(--purple)}
+.task-head .sp{flex:1}
+.goal{background:#f4efff;border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:17px}
+.hint{background:#fff8d6;border:2px dashed var(--yellow);border-radius:14px;padding:10px 14px;margin:10px 0;font-size:16px}
+.q{font-size:21px;font-weight:600;margin:6px 0 14px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{border:0;border-radius:16px;padding:16px;font-size:18px;font-weight:600;color:#fff;text-align:left;box-shadow:0 6px 0 rgba(0,0,0,.22);min-height:72px}
+.opt:nth-child(1){background:#3a86ff}.opt:nth-child(2){background:#ff4f8b}.opt:nth-child(3){background:#ff9f1c}.opt:nth-child(4){background:#2ec27e}
+.opt.sel{outline:5px solid var(--ink)}
+.opt.right{outline:5px solid #16a34a;filter:none}
+.opt.wrong{opacity:.45}
+.opt:disabled{cursor:default}
+
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.case{border:3px solid #ece4ff;border-radius:18px;padding:14px;background:#fff}
+.case .txt{font-size:17px;margin-bottom:10px}
+.case .em{font-size:30px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:3px solid transparent;border-radius:999px;padding:7px 12px;font-weight:600;font-size:15px;background:#f1ecfb;color:var(--ink)}
+.chip.privacy.on{background:var(--privacy);color:#fff}
+.chip.misinfo.on{background:var(--misinfo);color:#fff}
+.chip.social.on{background:var(--social);color:#fff}
+.chip.yes.on{background:var(--green);color:#fff}
+.chip.no.on{background:var(--red);color:#fff}
+.case.ok{border-color:var(--green);background:#ecfdf3}
+.case.bad{border-color:var(--red);background:#fff1f3}
+.fbline{margin-top:8px;font-weight:600;font-size:15px}
+
+.sent{display:block;width:100%;text-align:left;border:3px solid #ece4ff;background:#faf8ff;border-radius:12px;padding:9px 12px;margin:6px 0;font-size:16px;color:var(--ink)}
+.sent.on{border-color:var(--red);background:#ffe9ee}
+.sent.right{border-color:var(--green);background:#e7f9ee}
+
+textarea{width:100%;min-height:64px;border:3px solid #e1d8f7;border-radius:12px;padding:10px;font-family:inherit;font-size:16px;resize:vertical;outline:none}
+textarea:focus{border-color:var(--purple2)}
+.lbl{font-weight:600;margin:8px 0 4px;display:block}
+
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.rule{border:3px solid #ece4ff;border-radius:16px;padding:14px;background:#fff;font-size:17px;text-align:left;color:var(--ink);font-weight:500}
+.rule.on{border-color:#9b5de5;background:#f3eaff}
+.rule.good{border-color:var(--green);background:#ecfdf3}
+.rule.badpick{border-color:var(--red);background:#fff1f3}
+.counter{font-weight:700;color:#9b5de5}
+
+.actions{display:flex;gap:12px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.result{text-align:center;padding:10px}
+.result .big{font-family:"Lilita One";font-size:44px;color:var(--purple)}
+.badge{display:inline-block;background:var(--yellow);border-radius:14px;padding:6px 16px;font-weight:700;font-size:20px;box-shadow:0 4px 0 rgba(0,0,0,.2)}
+
+/* modal + toast + loader */
+.modal{position:fixed;inset:0;background:rgba(30,10,70,.6);display:grid;place-items:center;z-index:20;padding:16px}
+.modal .card{max-width:460px;text-align:center}
+.modal h2{color:var(--purple);margin:0 0 8px;font-size:30px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:14px;font-weight:600;z-index:30;box-shadow:0 6px 0 rgba(0,0,0,.3)}
+.loader{position:fixed;inset:0;background:rgba(30,10,70,.35);display:grid;place-items:center;z-index:25}
+.spin{width:64px;height:64px;border:8px solid rgba(255,255,255,.35);border-top-color:var(--yellow);border-radius:50%;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.pop{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(.6)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+footer{position:fixed;bottom:0;left:0;right:0;text-align:center;color:rgba(255,255,255,.85);font-size:13px;padding:8px;background:rgba(0,0,0,.2)}
+@media (max-width:640px){.opts{grid-template-columns:1fr}.brand{font-size:19px}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">🕵️ AI Ethics <span>Detective</span></div>
+  <div class="sp"></div>
+  <div id="who" class="pill hidden"></div>
+  <div id="pts" class="pill pts hidden">⭐ 0</div>
+  <button id="signout" class="btn sm out hidden" onclick="signOut()">Sign out</button>
+</div>
+
+<main id="app"></main>
+
+<footer>© 2026 Bindhuja Bose B · Teacher-made resource for Sharjah Indian School, Juwaiza · All rights reserved</footer>
+
+<div id="loader" class="loader hidden"><div class="spin"></div></div>
+<div id="toast" class="toast hidden"></div>
+<div id="modal" class="modal hidden"><div class="card" id="modalBox"></div></div>
+
+<script>
+/* ======== SETTINGS: paste your Apps Script Web App URL here ======== */
+const API_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
+/* =================================================================== */
+
+/* ---------- Lesson content (no answers are stored on this page) ---------- */
+const STARTER = [
+  { id:"S1", q:"📸 A photo goes viral showing thick snow covering the Burj Khalifa in July. What is the MOST likely explanation?",
+    opts:{a:"A rare summer snowstorm hit Dubai", b:"The image was created or edited using AI", c:"The camera was set to ‘winter mode’", d:"It is a photo taken in Antarctica"} },
+  { id:"S2", q:"🔦 A free torch app asks to access your contacts, location and microphone. What should you think?",
+    opts:{a:"This is a privacy red flag – a torch does not need these", b:"This is normal for every app", c:"It needs them to make the light brighter", d:"Allow everything to get the app faster"} }
+];
+const PLENARY = [
+  { id:"P1", q:"🎬 A video shows a UAE celebrity saying something they never said. This is an example of…",
+    opts:{a:"A spam filter", b:"A chatbot", c:"A deepfake", d:"A data backup"} },
+  { id:"P2", q:"🛑 Before sharing a surprising news post, the FIRST step of S.I.F.T. is…",
+    opts:{a:"Stop", b:"Share", c:"Save", d:"Send"} }
+];
+const CATS = { privacy:"🔒 Privacy", misinfo:"📰 Misinformation", social:"👥 Social Impact" };
+const L1_CASES = [
+  {id:"c1", em:"📱", t:"A free photo-editing app asks for access to all your contacts and messages."},
+  {id:"c2", em:"⚽", t:"A deepfake video shows a famous footballer promising free match tickets if you share a link."},
+  {id:"c3", em:"💼", t:"An AI hiring tool rejects most job applicants who live in one particular area."},
+  {id:"c4", em:"🤖", t:"A chatbot confidently tells a student that UAE National Day is on 18 December."},
+  {id:"c5", em:"🔊", t:"A smart speaker keeps recordings of family conversations without telling anyone."},
+  {id:"c6", em:"🛒", t:"Many supermarket cashier jobs are replaced by AI self-checkout machines."}
+];
+const L2_CASES = [
+  {id:"f1", title:"🧪 Aisha’s Quiz App", s:{a:"The app has a bright, colourful design.", b:"It asks students to type their Emirates ID number to play.", c:"It shows a score at the end of the quiz.", d:"It has 20 science questions."}},
+  {id:"f2", title:"📢 ‘Breaking News’ Post", s:{a:"The post has a picture of Dubai Marina.", b:"It was posted on a Tuesday evening.", c:"It has no source and says ‘Share before it gets deleted!’", d:"It is written in English."}},
+  {id:"f3", title:"🎥 Smart Camera at a Mall", s:{a:"It recognises every visitor’s face and stores it forever without telling them.", b:"It is placed near the main entrance.", c:"It works in the evening as well.", d:"It records in high definition."}}
+];
+const L3_CASES = [
+  {id:"r1", em:"📱", t:"A free photo-editing app asks for access to all your contacts and messages."},
+  {id:"r2", em:"⚽", t:"A deepfake video of a famous footballer promises free tickets if you share a link."},
+  {id:"r3", em:"💼", t:"An AI hiring tool rejects most applicants from one particular area."}
+];
+const L4_RULES = [
+  {id:"g1", t:"Ask permission before saving any personal data."},
+  {id:"g2", t:"Save students’ photos to improve the bot without telling them."},
+  {id:"g3", t:"Show a note that answers may be wrong and should be checked."},
+  {id:"g4", t:"Give answers without ever saying where the information came from."},
+  {id:"g5", t:"Only work well for students who type in perfect English."},
+  {id:"g6", t:"Treat all students fairly, whatever their background."},
+  {id:"g7", t:"Share chat history with advertisers."},
+  {id:"g8", t:"Let a teacher review and correct the bot’s mistakes."}
+];
+const BONUS = [
+  {id:"h1", em:"✍️", t:"Using AI to check grammar in your own essay, then rewriting it yourself."},
+  {id:"h2", em:"🎙️", t:"Making a funny AI voice clip of a classmate without asking them."},
+  {id:"h3", em:"📍", t:"Turning off location access for apps that don’t need it."},
+  {id:"h4", em:"🖼️", t:"Sharing an AI-made ‘breaking news’ image without checking the source."},
+  {id:"h5", em:"🙋", t:"Telling your teacher when a chatbot gave you a wrong answer."}
+];
+const HINTS = {
+  S: "Think about what is possible in real life, and what an app really needs to do its job.",
+  L1: "Ask yourself: Is someone’s personal data at risk? Is something fake or false? Or does it change people’s lives or jobs?",
+  L2: "Most sentences are harmless details. Look for the one that could hurt someone’s privacy or spread something untrue.",
+  L3: "The user is the person using the app. The developer is the company that made it. What should each one do to be responsible?",
+  L4: "A good rule keeps people safe, keeps information honest and treats everyone fairly.",
+  P: "Remember the three concerns from today and the S.I.F.T. steps.",
+  B1: "Would this action respect people, protect privacy and keep information honest?"
+};
+
+/* ---------- State ---------- */
+let S = { token:null, state:null, screen:"login", draft:{} };
+const $ = (id)=>document.getElementById(id);
+const esc = (s)=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const done = (id)=>!!(S.state && S.state.done[id]);
+
+/* ---------- Server calls ---------- */
+async function api(body){
+  if(!API_URL || API_URL.indexOf("http")!==0) throw new Error("The teacher has not connected this page yet.");
+  $("loader").classList.remove("hidden");
+  try{
+    const r = await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
+    return await r.json();
+  } catch(e){ throw new Error("Could not reach the server. Check the internet and try again."); }
+  finally{ $("loader").classList.add("hidden"); }
+}
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add("hidden"),2600); }
+function modal(html){ $("modalBox").innerHTML=html; $("modal").classList.remove("hidden"); }
+function closeModal(){ $("modal").classList.add("hidden"); }
+
+function setState(st){
+  S.state = st;
+  $("who").textContent = `👤 ${st.name} · ${st.cls}-${st.div}`;
+  const p=$("pts"); p.textContent = `⭐ ${st.points}`; p.classList.remove("pop"); void p.offsetWidth; p.classList.add("pop");
+  ["who","pts","signout"].forEach(i=>$(i).classList.remove("hidden"));
+}
+
+/* ---------- Login ---------- */
+function renderLogin(){
+  const saved = JSON.parse(sessionStorage.getItem("aied_who")||"{}");
+  const divs = "ABCDEFGHIJKLMNOPQ".split("").map(d=>`<option ${saved.div===d?"selected":""}>${d}</option>`).join("");
+  const classes = ["V","VI","VII","VIII"].map(c=>`<option ${ (saved.cls||"VIII")===c?"selected":""}>${c}</option>`).join("");
+  $("app").innerHTML = `
+  <div class="card login">
+    <h1>🕵️ AI Ethics Detective</h1>
+    <p class="sub">Ethics and Responsible AI · Grade VIII</p>
+    <div class="field"><label>Your full name</label><input id="nm" autocomplete="off" spellcheck="false" maxlength="40" value="${esc(saved.name||"")}"></div>
+    <div class="row2">
+      <div class="field"><label>Class</label><select id="cl">${classes}</select></div>
+      <div class="field"><label>Division</label><select id="dv"><option value="">–</option>${divs}</select></div>
+    </div>
+    <div class="err" id="er"></div>
+    <button class="btn" style="width:100%" onclick="doLogin()">Start the mission 🚀</button>
+  </div>`;
+  $("nm").addEventListener("keydown",e=>{ if(e.key==="Enter") doLogin(); });
+}
+async function doLogin(){
+  const name=$("nm").value.trim(), cls=$("cl").value, div=$("dv").value;
+  if(name.length<2) return $("er").textContent="Please type your full name.";
+  if(!div) return $("er").textContent="Please choose your division.";
+  try{
+    const r = await api({action:"login",name,cls,div});
+    if(!r.ok) return $("er").textContent=r.error;
+    S.token=r.token; sessionStorage.setItem("aied_tok",r.token);
+    sessionStorage.setItem("aied_who",JSON.stringify({name,cls,div}));
+    setState(r.state);
+    if(r.resumed) toast("Welcome back! Your progress is saved. 🎉");
+    go("map");
+  }catch(e){ $("er").textContent=e.message; }
+}
+function signOut(){
+  sessionStorage.removeItem("aied_tok"); sessionStorage.removeItem("aied_who");
+  S={token:null,state:null,screen:"login",draft:{}};
+  ["who","pts","signout"].forEach(i=>$(i).classList.add("hidden"));
+  closeModal(); renderLogin();
+}
+
+/* ---------- Journey map ---------- */
+const STOPS = [
+  {k:"starter", cls:"c-starter", ic:"🔍", name:"Starter", d:"Real or AI?", items:["S1","S2"], open:()=>true},
+  {k:"L1", cls:"c-l1", ic:"🗂️", name:"Level 1", d:"Sort the Case", items:["L1"], open:()=>done("S1")&&done("S2")},
+  {k:"L2", cls:"c-l2", ic:"🚩", name:"Level 2", d:"Spot the Red Flag", items:["L2"], open:()=>done("L1")},
+  {k:"L3", cls:"c-l3", ic:"🛡️", name:"Level 3", d:"Be Responsible", items:["L3"], open:()=>done("L2")},
+  {k:"L4", cls:"c-l4", ic:"📜", name:"Level 4", d:"Responsible AI Code", items:["L4"], open:()=>done("L3"), opt:true},
+  {k:"plenary", cls:"c-pl", ic:"🏁", name:"Plenary", d:"Final check", items:["P1","P2"], open:()=>done("L3")},
+  {k:"B1", cls:"c-b", ic:"🌟", name:"Extra Challenge", d:"Responsible or Not?", items:["B1"], open:()=>done("P1")&&done("P2"), opt:true}
+];
+function renderMap(){
+  const html = STOPS.map(s=>{
+    const isDone = s.items.every(done), isOpen = s.open();
+    const status = isDone ? "Completed" : isOpen ? "Tap to play ▶" : "🔒 Locked";
+    return `<button class="stop ${s.cls} ${isDone?"done":""} ${isOpen?"":"locked"}" ${isOpen&&!isDone?`onclick="go('${s.k}')"`:""} ${isDone?`onclick="go('${s.k}')"`:""}>
+      <div class="ic">${s.ic}</div><h3>${s.name}</h3><p>${s.d}</p>${s.opt?'<span class="tag">Optional</span>':""}
+      <div class="st">${status}</div></button>`;
+  }).join("");
+  $("app").innerHTML = `<div class="title"><h2>Your Detective Mission</h2><p>Finish each stop to unlock the next one.</p></div><div class="map">${html}</div>`;
+}
+
+/* ---------- Navigation ---------- */
+function go(screen){ S.screen=screen; S.draft={}; window.scrollTo(0,0);
+  ({map:renderMap, starter:()=>renderMCQ(STARTER,"Starter: Real or AI?","S"), plenary:()=>renderMCQ(PLENARY,"Plenary: Final Check","P"),
+    L1:renderL1, L2:renderL2, L3:renderL3, L4:renderL4, B1:renderB1})[screen]();
+}
+function head(title, hintKey){
+  return `<div class="task-head"><button class="btn sm blue" onclick="go('map')">⬅ Map</button><h2>${title}</h2><div class="sp"></div>
+    <button class="btn sm orange" onclick="this.parentNode.nextElementSibling.classList.toggle('hidden')">💡 Hint</button></div>
+    <div class="hint hidden">💡 ${HINTS[hintKey]}</div>`;
+}
+
+/* ---------- MCQ (Starter / Plenary) ---------- */
+function renderMCQ(list, title, hk){
+  const next = list.find(q=>!done(q.id));
+  let body;
+  if(!next){
+    const got = list.reduce((a,q)=>a+S.state.done[q.id].pts,0), max=list.reduce((a,q)=>a+S.state.done[q.id].max,0);
+    body = `<div class="result"><div class="big">${got} / ${max}</div><p>points from this stop</p>
+      <button class="btn" onclick="go('map')">Back to the map 🗺️</button></div>`;
+  } else {
+    const n = list.indexOf(next)+1;
+    body = `<p style="margin:0;color:#7a6aa0;font-weight:600">Question ${n} of ${list.length}</p>
+      <div class="q">${next.q}</div>
+      <div class="opts">${Object.entries(next.opts).map(([k,v])=>`<button class="opt" data-k="${k}" onclick="pickOpt(this)">${esc(v)}</button>`).join("")}</div>
+      <div class="actions"><button class="btn" id="sendBtn" disabled onclick="sendMCQ('${next.id}')">Lock in answer 🔒</button></div>`;
+  }
+  $("app").innerHTML = `<div class="card">${head(title,hk)}${body}</div>`;
+}
+function pickOpt(b){ document.querySelectorAll(".opt").forEach(o=>o.classList.remove("sel")); b.classList.add("sel"); S.draft.choice=b.dataset.k; $("sendBtn").disabled=false; }
+async function sendMCQ(id){
+  const r = await submit(id,{choice:S.draft.choice}); if(!r) return;
+  const fb=r.result.fb;
+  document.querySelectorAll(".opt").forEach(o=>{ o.disabled=true; if(o.dataset.k===fb.right) o.classList.add("right"); else o.classList.add("wrong"); });
+  $("sendBtn").outerHTML = `<button class="btn" onclick="go(S.screen)">${fb.correct?"✅ Correct! +"+r.result.pts:"❌ Not this time"} · Next ▶</button>`;
+}
+
+/* ---------- Generic submit ---------- */
+async function submit(item, answer){
+  try{
+    const r = await api({action:"submit",token:S.token,item,answer});
+    if(!r.ok){ if(/sign in/i.test(r.error)){ toast(r.error); signOut(); } else toast(r.error); return null; }
+    setState(r.state); return r;
+  }catch(e){ toast(e.message); return null; }
+}
+function finishModal(r, extra){
+  modal(`<h2>${r.result.pts>=r.result.max*0.7?"🎉 Brilliant!":"👍 Good effort!"}</h2>
+    <p class="badge">+${r.result.pts} points</p><p>${extra||""}</p>
+    <div class="actions" style="justify-content:center"><button class="btn" onclick="closeModal();go('map')">Back to the map 🗺️</button></div>`);
+}
+
+/* ---------- Level 1: Sort the Case ---------- */
+function renderL1(){
+  const res = S.state.done.L1;
+  const cards = L1_CASES.map(c=>{
+    const f = res && res.fb[c.id];
+    return `<div class="case ${f?(f.correct?"ok":"bad"):""}"><div class="em">${c.em}</div><div class="txt">${esc(c.t)}</div>
+      <div class="chips">${Object.entries(CATS).map(([k,v])=>`<button class="chip ${k} ${f&&f.right===k?"on":""}" ${res?"disabled":""} data-c="${c.id}" data-v="${k}" onclick="chip(this)">${v}</button>`).join("")}</div>
+      ${f?`<div class="fbline">${f.correct?"✅ Correct":"❌ Correct answer shown"}</div>`:""}</div>`;
+  }).join("");
+  $("app").innerHTML = `<div class="card">${head("Level 1 · Sort the Case","L1")}
+    ${res?"":`<div class="goal">🎯 Read each case and choose the AI concern it shows.</div>`}
+    <div class="cases">${cards}</div>
+    <div class="actions">${res?`<button class="btn" onclick="go('map')">Back to the map 🗺️</button>`:`<button class="btn" id="sendBtn" disabled onclick="sendL1()">Submit Level 1 ✔</button>`}</div></div>`;
+}
+function chip(b){
+  const c=b.dataset.c; S.draft[c]=b.dataset.v;
+  b.parentNode.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===b));
+  const sb=$("sendBtn"); if(sb) sb.disabled = !(S.screen==="L1"?L1_CASES:BONUS).every(x=>S.draft[x.id]);
+}
+async function sendL1(){ const r=await submit("L1",S.draft); if(!r) return; renderL1(); finishModal(r,"Level 2 is now unlocked. 🚩"); }
+
+/* ---------- Level 2: Spot the Red Flag ---------- */
+function renderL2(){
+  const res = S.state.done.L2;
+  const cards = L2_CASES.map(c=>{
+    const f = res && res.fb[c.id];
+    return `<div class="case ${f?(f.correct?"ok":"bad"):""}"><h3 style="margin:0 0 6px">${c.title}</h3>
+      ${Object.entries(c.s).map(([k,v])=>`<button class="sent ${f&&f.right===k?"right":""}" ${res?"disabled":""} data-c="${c.id}" data-v="${k}" onclick="flag(this)">${esc(v)}</button>`).join("")}
+      ${f?`<div class="fbline">${f.correct?"✅ You found it!":"❌ The red flag is shown in green"}</div>`:""}</div>`;
+  }).join("");
+  $("app").innerHTML = `<div class="card">${head("Level 2 · Spot the Red Flag","L2")}
+    ${res?"":`<div class="goal">🎯 In each case, tap the ONE sentence that is the red flag 🚩.</div>`}
+    <div class="cases">${cards}</div>
+    <div class="actions">${res?`<button class="btn" onclick="go('map')">Back to the map 🗺️</button>`:`<button class="btn" id="sendBtn" disabled onclick="sendL2()">Submit Level 2 ✔</button>`}</div></div>`;
+}
+function flag(b){ S.draft[b.dataset.c]=b.dataset.v; b.parentNode.querySelectorAll(".sent").forEach(x=>x.classList.toggle("on",x===b)); $("sendBtn").disabled=!L2_CASES.every(x=>S.draft[x.id]); }
+async function sendL2(){ const r=await submit("L2",S.draft); if(!r) return; renderL2(); finishModal(r,"Level 3 is now unlocked. 🛡️"); }
+
+/* ---------- Level 3: Be Responsible ---------- */
+function renderL3(){
+  const res = S.state.done.L3;
+  const cards = L3_CASES.map(c=>{
+    const f = res && res.fb[c.id];
+    return `<div class="case ${f?(f.complete?"ok":"bad"):""}"><div class="em">${c.em}</div><div class="txt">${esc(c.t)}</div>
+      ${res?`<div class="fbline">${f.complete?"✅ Saved for your teacher":"⚠️ Answer was too short"}</div>`:`
+      <label class="lbl">👤 What should the USER do?</label><textarea data-c="${c.id}" data-w="user" oninput="txt()"></textarea>
+      <label class="lbl">🏢 What should the DEVELOPER do?</label><textarea data-c="${c.id}" data-w="dev" oninput="txt()"></textarea>`}</div>`;
+  }).join("");
+  $("app").innerHTML = `<div class="card">${head("Level 3 · Be Responsible","L3")}
+    ${res?"":`<div class="goal">🎯 Write one responsible action for the user and one for the developer in each case. Use full sentences.</div>`}
+    <div class="cases">${cards}</div>
+    <div class="actions">${res?`<button class="btn" onclick="go('map')">Back to the map 🗺️</button>`:`<button class="btn" id="sendBtn" disabled onclick="sendL3()">Submit Level 3 ✔</button>`}</div></div>`;
+}
+function txt(){
+  const a={}; let ok=true;
+  document.querySelectorAll("textarea").forEach(t=>{ (a[t.dataset.c]=a[t.dataset.c]||{})[t.dataset.w]=t.value; if(t.value.trim().length<15) ok=false; });
+  S.draft=a; $("sendBtn").disabled=!ok;
+}
+async function sendL3(){
+  const r=await submit("L3",S.draft); if(!r) return; renderL3();
+  modal(`<h2>🎉 Main mission complete!</h2><p class="badge">+${r.result.pts} points</p>
+    <p>Your teacher will read your answers. What next?</p>
+    <div class="actions" style="justify-content:center">
+      <button class="btn" onclick="closeModal();go('plenary')">Go to the Plenary 🏁</button>
+      <button class="btn pink" onclick="closeModal();go('L4')">Try Level 4 (optional) 📜</button></div>`);
+}
+
+/* ---------- Level 4 (optional): Responsible AI Code ---------- */
+function renderL4(){
+  const res = S.state.done.L4; S.draft.picks = S.draft.picks||[];
+  const tiles = L4_RULES.map(r=>{
+    let c=""; if(res){ const g=res.fb.good.includes(r.id), p=res.fb.picks.includes(r.id); c = g?"good":(p?"badpick":""); }
+    else if(S.draft.picks.includes(r.id)) c="on";
+    return `<button class="rule ${c}" ${res?"disabled":""} onclick="pickRule('${r.id}')">${res?(res.fb.good.includes(r.id)?"✅ ":"❌ "):""}${esc(r.t)}</button>`;
+  }).join("");
+  $("app").innerHTML = `<div class="card">${head("Level 4 · Responsible AI Code","L4")}
+    ${res?`<div class="goal">✅ Green = the four responsible rules.</div>`:`<div class="goal">🎯 The school is building a homework chatbot. Pick the <b>4 rules</b> that make it responsible. <span class="counter" id="cnt">${S.draft.picks.length} / 4</span></div>`}
+    <div class="rules">${tiles}</div>
+    <div class="actions">${res?`<button class="btn" onclick="go('map')">Back to the map 🗺️</button>`:`<button class="btn" id="sendBtn" ${S.draft.picks.length===4?"":"disabled"} onclick="sendL4()">Submit my Code ✔</button>`}</div></div>`;
+}
+function pickRule(id){
+  const p=S.draft.picks, i=p.indexOf(id);
+  if(i>-1) p.splice(i,1); else if(p.length<4) p.push(id); else return toast("You can choose only 4 rules.");
+  renderL4();
+}
+async function sendL4(){ const r=await submit("L4",{picks:S.draft.picks}); if(!r) return; renderL4(); finishModal(r, done("P1")&&done("P2")?"":"Now head to the Plenary. 🏁"); }
+
+/* ---------- Extra challenge: Responsible or Not? ---------- */
+function renderB1(){
+  const res = S.state.done.B1;
+  const cards = BONUS.map(c=>{
+    const f = res && res.fb[c.id];
+    return `<div class="case ${f?(f.correct?"ok":"bad"):""}"><div class="em">${c.em}</div><div class="txt">${esc(c.t)}</div>
+      <div class="chips"><button class="chip yes ${f&&f.right==="yes"?"on":""}" ${res?"disabled":""} data-c="${c.id}" data-v="yes" onclick="chip(this)">✅ Responsible</button>
+      <button class="chip no ${f&&f.right==="no"?"on":""}" ${res?"disabled":""} data-c="${c.id}" data-v="no" onclick="chip(this)">❌ Not responsible</button></div>
+      ${f?`<div class="fbline">${f.correct?"✅ Correct":"❌ Correct answer shown"}</div>`:""}</div>`;
+  }).join("");
+  $("app").innerHTML = `<div class="card">${head("Extra Challenge · Responsible or Not?","B1")}
+    ${res?"":`<div class="goal">🌟 Finished early? Decide if each action is a responsible use of AI.</div>`}
+    <div class="cases">${cards}</div>
+    <div class="actions">${res?`<button class="btn" onclick="go('map')">Back to the map 🗺️</button>`:`<button class="btn" id="sendBtn" disabled onclick="sendB1()">Submit ✔</button>`}</div></div>`;
+}
+async function sendB1(){ const r=await submit("B1",S.draft); if(!r) return; renderB1(); finishModal(r,"Amazing detective work! 🕵️"); }
+
+/* ---------- Resume after tab switch or refresh ---------- */
+(async function init(){
+  const tok = sessionStorage.getItem("aied_tok");
+  if(tok){
+    try{ const r = await api({action:"state",token:tok}); if(r.ok){ S.token=tok; setState(r.state); return go("map"); } }catch(e){}
+    sessionStorage.removeItem("aied_tok");
+  }
+  renderLogin();
+})();
+</script>
+</body>
+</html>
